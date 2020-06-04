@@ -146,25 +146,25 @@ def Do():
 
         lowest = kong * 0.85
         arg = 1
-        if (lowest > 5000):
-            arg = 20
-        elif (lowest > 2000):
-            arg = 15
+        if(lowest>10000):
+            arg=100
+        elif (lowest > 3000):
+            arg = 50
         elif (lowest > 1000):
-            arg = 10
+            arg = 20
         elif (lowest > 500):
-            arg = 5
+            arg = 15
         elif (lowest > 100):
-            arg = 2
+            arg = 10
         elif (lowest > 10):
-            arg = 0.5
+            arg = 6
         elif (lowest > 0):
             arg = 0.2
         else:
             print('负数')
 
-        condition1 = zong <= lowest
-        condition2 = zong > lowest + arg
+        condition1 = zong <= lowest-0.05
+        condition2 = zong > lowest + arg+0.05
 
         #for lowest
 
