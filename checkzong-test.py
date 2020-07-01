@@ -20,16 +20,7 @@ def copy():
     k.release_key(k.control_l_key)
 
 
-# def getCopy(maxTime=1.3):
-#     # maxTime = 3  # 3秒复制 调用copy() 不管结果对错
-#     while (maxTime > 0):
-#         maxTime = maxTime - 0.3
-#         time.sleep(0.3)
-#         # print('doing')
-#         copy()
-#     result = pyperclip.paste()
-#     print('debug:'+str(result))
-#     return result
+
 
 def getCopy(noresult=None,maxTime=1):
     # maxTime = 3  # 3秒复制 调用copy() 不管结果对错
@@ -149,7 +140,15 @@ def Do():
         print('开始检测综合单价')
         tapkey(k.up_key, 3)
         tapkey(k.escape_key)
-        tapkey(k.right_key, 4)
+        tapkey(k.right_key, 1)
+
+        #根据单位下浮------------------------------
+        tapkey(k.up_key)
+        unit=getCopy()
+        tapkey(k.down_key)
+        tapkey(k.escape_key)
+
+        tapkey(k.right_key, 3)
         tapkey(k.up_key)
 
         zong = float(getCopy(0))
@@ -164,26 +163,41 @@ def Do():
 
         lowest = kong * 0.85
         arg = 1
-        if (lowest > 10000):
-            arg = 100
-        elif (lowest > 3000):
-            arg = 50
-        elif (lowest > 1000):
-            arg = 20
-        elif (lowest > 500):
-            arg = 15
-        elif (lowest > 100):
-            arg = 10
-        elif (lowest > 50):
-            arg = 5
-        elif (lowest > 30):
-            arg = 2
-        elif (lowest > 10):
-            arg = 1
-        elif (lowest > 0):
-            arg = 0.2
+        UnitCloseArg='m' in unit or 'kg' in unit
+        if(UnitCloseArg):
+            if(lowest>1000):
+                arg=0.5
+            elif(lowest>500):
+                arg=0.3
+            if(lowest>100):
+                arg=0.25
+            elif(lowest>0):
+                arg=0.2
         else:
-            print('负数')
+            if (lowest > 10000):
+                arg = 100
+            elif(lowest>5000):
+                arg=50
+            elif (lowest > 3000):
+                arg = 30
+            elif (lowest > 1000):
+                arg = 20
+            elif (lowest > 500):
+                arg = 15
+            elif (lowest > 100):
+                arg = 10
+            elif (lowest > 50):
+                arg = 5
+            elif (lowest > 30):
+                arg = 2
+            elif (lowest > 10):
+                arg = 1
+            elif (lowest > 0):
+                arg = 0.2
+            else:
+                print('负数')
+
+
 
         condition1 = zong <= lowest - 0.01
         condition2 = zong > lowest + arg + 0.01
