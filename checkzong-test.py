@@ -80,6 +80,14 @@ def Do():
                 print('特殊id  1')
             else:
                 print('不对的6位数')
+        elif(length==9):#03B050001
+            pattern = re.compile('\d\d\dB\d+')
+            match = pattern.match(str(code))
+            if (match):
+                isRightNum = True
+                print('特殊id  1')
+            else:
+                print('不对的9位数')
         elif (length == 13):
             pattern = re.compile('Z\d+')
             match = pattern.match(str(code))
@@ -159,9 +167,10 @@ def Do():
         kong = float(getCopy())
         swimValue = abs((kong) - (zong)) / (kong)
 
-        lowest = kong * 0.85
+        #lowest = kong * 0.85
 
-        lowest = kong * 0.85
+        lowest = kong * 0.8##智能化--------------------------------------------
+
         arg = 1
         UnitCloseArg='m' in unit or 'kg' in unit
         if(UnitCloseArg):
@@ -403,9 +412,8 @@ if __name__ == '__main__':
         t.setDaemon(True)
         t.start()
     print('press Capital to start')
-    print('键盘有点问题，程序运行完按Ctrl')
     print('做之前先把长度为4的，不需要程序进行处理的，排除！！！！')
-    print('两个小时 300个')
+    print('智能化0.8看下，164行！！！！')
 
     with keyboard.Listener(on_press=onpressed) as listener:
         listener.join()
