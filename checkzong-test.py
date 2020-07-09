@@ -167,9 +167,9 @@ def Do():
         kong = float(getCopy())
         swimValue = abs((kong) - (zong)) / (kong)
 
-        #lowest = kong * 0.85
+        lowest = kong * 0.85
 
-        lowest = kong * 0.8##智能化--------------------------------------------
+        #lowest = kong * 0.8##智能化--------------------------------------------
 
         arg = 1
         UnitCloseArg='m' in unit or 'kg' in unit
@@ -413,7 +413,7 @@ if __name__ == '__main__':
         t.start()
     print('press Capital to start')
     print('做之前先把长度为4的，不需要程序进行处理的，排除！！！！')
-    print('智能化0.8看下，164行！！！！')
+    #print('智能化0.8看下，164行！！！！')
 
     with keyboard.Listener(on_press=onpressed) as listener:
         listener.join()
