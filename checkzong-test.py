@@ -80,8 +80,8 @@ def Do():
                 print('特殊id  1')
             else:
                 print('不对的6位数')
-        elif(length==9):#03B050001
-            pattern = re.compile('\d\d\dB\d+')
+        elif(length==9):#03B050001 03B020001
+            pattern = re.compile('\d\dB\d+')
             match = pattern.match(str(code))
             if (match):
                 isRightNum = True
