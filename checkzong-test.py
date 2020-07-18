@@ -22,9 +22,9 @@ def copy():
 
 
 
-def getCopy(noresult=None,maxTime=1):
+def getCopy(noresult=None,maxTime=1.3,isDone=False):
     # maxTime = 3  # 3秒复制 调用copy() 不管结果对错
-    if(maxTime<=0):
+    if(maxTime<=0 or isDone):
         return noresult
     pyperclip.copy('')
     time.sleep(0.3)
@@ -32,7 +32,9 @@ def getCopy(noresult=None,maxTime=1):
     copy()
     result = pyperclip.paste()
     if(result==''):
-        return getCopy(noresult,maxTime-0.3)
+        return getCopy(noresult,maxTime-0.3,False)
+    else:
+        return getCopy(noresult,maxTime-0.3,True)
 
     #print('debug:'+str(result))
     return result
