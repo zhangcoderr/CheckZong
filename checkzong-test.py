@@ -34,10 +34,13 @@ def getCopy(noresult=None,maxTime=1.3,isDone=False):
     if(result==''):
         return getCopy(noresult,maxTime-0.3,False)
     else:
-        return getCopy(noresult,maxTime-0.3,True)
+        return getCopy(result,maxTime-0.3,True)
 
     #print('debug:'+str(result))
     return result
+
+
+
 
 
 def tapkey(key, count=1, waitTime=0.1):
