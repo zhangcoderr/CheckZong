@@ -48,7 +48,6 @@ def tapkey(key, count=1, waitTime=0.1):
         k.tap_key(key)
         time.sleep(waitTime)
 
-
 def Quit():
     global end
     end = True
