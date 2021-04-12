@@ -20,16 +20,27 @@ def copy():
     k.release_key(k.control_l_key)
 
 
-def getCopy(maxTime=1.2):
-    # maxTime = 3  # 3秒复制 调用copy() 不管结果对错
-    while (maxTime > 0):
-        maxTime = maxTime - 0.3
-        time.sleep(0.3)
-        # print('doing')
-        copy()
 
+
+def getCopy(noresult=None,maxTime=1.3,isDone=False):
+    # maxTime = 3  # 3秒复制 调用copy() 不管结果对错
+    if(maxTime<=0 or isDone):
+        return noresult
+    pyperclip.copy('')
+    time.sleep(0.3)
+    # print('doing')
+    copy()
     result = pyperclip.paste()
+    if(result==''):
+        return getCopy(noresult,maxTime-0.3,False)
+    else:
+        return getCopy(result,maxTime-0.3,True)
+
+    #print('debug:'+str(result))
     return result
+
+
+
 
 
 def tapkey(key, count=1, waitTime=0.1):
@@ -45,7 +56,7 @@ def Quit():
 
 def Do():
     global index_count
-
+    global start
     if start:
         time.sleep(1)
         # 判断编号是否为12位数字
@@ -74,6 +85,14 @@ def Do():
                 print('特殊id  1')
             else:
                 print('不对的6位数')
+        elif(length==9):#03B050001 03B020001
+            pattern = re.compile('\d\dB\d+')
+            match = pattern.match(str(code))
+            if (match):
+                isRightNum = True
+                print('特殊id  1')
+            else:
+                print('不对的9位数')
         elif (length == 13):
             pattern = re.compile('Z\d+')
             match = pattern.match(str(code))
@@ -101,7 +120,7 @@ def Do():
             nowProjectCharactor = getCopy()
             downNumber = downNumber + 1
             if (downNumber < 4):
-                if (nowProjectCharactor == projectCharactor):
+                if (nowProjectCharactor == None):
                     continue
                 else:
                     print('不处理_index：' + str(index_count))
@@ -112,13 +131,15 @@ def Do():
             # elif(downNumber==3):
             #     #三个头的 改Q的
             elif (downNumber == 4):
-                if (nowProjectCharactor != projectCharactor):
+                if (nowProjectCharactor == None):
+                    continue
+                elif (nowProjectCharactor != projectCharactor):
                     projectCharactor = nowProjectCharactor
                     # print('4')
                     break
             elif (downNumber > 4):
                 print('大于4的项目')
-                if (nowProjectCharactor == projectCharactor):
+                if (nowProjectCharactor == None):
                     continue
                 else:
                     print('不处理_index：' + str(index_count))
@@ -132,9 +153,18 @@ def Do():
         print('开始检测综合单价')
         tapkey(k.up_key, 3)
         tapkey(k.escape_key)
-        tapkey(k.right_key, 4)
+        tapkey(k.right_key, 1)
+
+        #根据单位下浮------------------------------
         tapkey(k.up_key)
-        zong = float(getCopy())
+        unit=getCopy()
+        tapkey(k.down_key)
+        tapkey(k.escape_key)
+
+        tapkey(k.right_key, 3)
+        tapkey(k.up_key)
+
+        zong = float(getCopy(0))
         tapkey(k.down_key)
         tapkey(k.escape_key)
         tapkey(k.right_key)
@@ -144,24 +174,44 @@ def Do():
 
         lowest = kong * 0.85
 
-        lowest = kong * 0.85
+        #lowest = kong * 0.8##智能化--------------------------------------------
+
         arg = 1
-        if (lowest > 10000):
-            arg = 100
-        elif (lowest > 3000):
-            arg = 50
-        elif (lowest > 1000):
-            arg = 20
-        elif (lowest > 500):
-            arg = 15
-        elif (lowest > 100):
-            arg = 10
-        elif (lowest > 10):
-            arg = 6
-        elif (lowest > 0):
-            arg = 0.2
+        UnitCloseArg='m' in unit or 'kg' in unit
+        if(UnitCloseArg):
+            if(lowest>1000):
+                arg=0.5
+            elif(lowest>500):
+                arg=0.3
+            if(lowest>100):
+                arg=0.25
+            elif(lowest>0):
+                arg=0.2
         else:
-            print('负数')
+            if (lowest > 10000):
+                arg = 100
+            elif(lowest>5000):
+                arg=50
+            elif (lowest > 3000):
+                arg = 30
+            elif (lowest > 1000):
+                arg = 20
+            elif (lowest > 500):
+                arg = 15
+            elif (lowest > 100):
+                arg = 10
+            elif (lowest > 50):
+                arg = 5
+            elif (lowest > 30):
+                arg = 2
+            elif (lowest > 10):
+                arg = 1
+            elif (lowest > 0):
+                arg = 0.2
+            else:
+                print('负数')
+
+
 
         condition1 = zong <= lowest - 0.01
         condition2 = zong > lowest + arg + 0.01
@@ -177,30 +227,14 @@ def Do():
             tapkey(k.left_key)
             tapkey(k.down_key, 2)
 
-            nowValue = float(getCopy())
+            nowValue=float(getCopy(0))
+
+
+
             value = ''
-            # 比控制价高一点
-            # if(nowValue==kong):
-            #     if(zong>kong):
-            #         print('综合>控制')
-            #     else:
-            #         value=float(abs((kong)-(zong)))*1.04
-            #         #print(value)
-            # else:
-            #     if(nowValue<(zong-kong)):
-            #         print('主材小于价格相差')
-            #     else:
-            #         if(kong>zong):
-            #             value=float(kong-zong)*1.04+nowValue
-            #         elif(kong<zong):
-            #             value=nowValue-float(zong-kong)*0.97
-            # 比控制价高一点 end
-
-            # 比最低价高一点
 
 
-
-            if (nowValue == kong):
+            if (nowValue == None):
                 print('空空空')
                 # print(projectCharactor)
                 if (zong > lowest):
@@ -237,6 +271,8 @@ def Do():
             else:
                 # if(value>80):
                 # value=int(value)  #不取整了
+                if(value<0):
+                    value=0
                 k.type_string(str(value))
                 print(value)
                 tapkey(k.enter_key)
@@ -247,20 +283,25 @@ def Do():
                 tapkey(k.escape_key)
                 tapkey(k.right_key, 6)
                 tapkey(k.up_key, 3)
+
                 changed_zong = float(getCopy())
 
                 # temppppppppppppppppppppppppppppppppppppppp
                 minus_zong = changed_zong - zong  # 合价
-                if (nowValue == kong):
+                if (nowValue == None):
                     minus_value = value - 0
                 else:
                     minus_value = value - nowValue
-                changed_arg = minus_zong / minus_value
+                if(minus_value==0):
+                    changed_arg=1
+                else:
+                    changed_arg = minus_zong / minus_value
+
                 print(changed_arg)
                 changed_value = value
                 if (changed_arg != 1 and changed_arg != 0):
 
-                    if (nowValue == kong):
+                    if (nowValue == None):
                         print('空空空22')
                         # print(projectCharactor)
                         if (zong > lowest):
@@ -281,6 +322,7 @@ def Do():
 
                             else:
                                 print('材料价太少，少到最低价都不够减22')
+
                         else:
                             if (zong < lowest):
                                 add = lowest + arg - zong
@@ -329,68 +371,6 @@ def Do():
 
 
 
-        #
-        #
-        #
-        #
-        # targetName=getCopy()
-        #
-        #
-        # dataResult=getresult(pyperclip.paste())
-        # if (dataResult.result == ''):
-        #     print('没有这个:' + pyperclip.paste() + ' ，需更新表格')
-        #     # 没有找到这个 跳过 to do ---------------------
-        #     tapkey(k.escape_key)
-        #     tapkey(k.down_key)
-        #     tapkey(k.left_key)
-        #     tapkey(k.enter_key)
-        #     return
-        # else:
-        #
-        #     if(dataResult.typeArray==''):
-        #         print('无规格直接输入')
-        #         tapkey(k.enter_key, 5)
-        #
-        #         k.type_string(dataResult.result)
-        #         tapkey(k.enter_key)
-        #         time.sleep(10)
-        #
-        #         tapkey(k.escape_key)
-        #         tapkey(k.left_key, 11)#适当修改
-        #         tapkey(k.enter_key,3)#适当修改
-        #     else:
-        #         print('表格匹配名字，判断且有规格')
-        #         tapkey(k.enter_key)
-        #         maxTime = 3
-        #         while (maxTime > 0):
-        #             maxTime = maxTime - 0.5
-        #             time.sleep(0.5)
-        #             #print('doing')
-        #             copy()
-        #         targetType = pyperclip.paste()
-        #         if(targetType==targetName):#相等则targetType为空 规格型号没填 复制为上次结果
-        #             targetType=''
-        #         result_2 = getresult_2(targetName, targetType)
-        #         if(result_2==''):
-        #             print('无匹配   '+targetName+'   无匹配   '+targetType)
-        #             tapkey(k.escape_key)
-        #             tapkey(k.down_key)
-        #             tapkey(k.left_key,2)
-        #             tapkey(k.enter_key)
-        #         else:
-        #             print('规格匹配输入'+targetName+'     '+targetType)
-        #             tapkey(k.enter_key,4)#适当修改
-        #             k.type_string(result_2)
-        #             tapkey(k.enter_key)
-        #             time.sleep(10)
-        #
-        #
-        #             tapkey(k.escape_key)
-        #             tapkey(k.left_key, 11)#适当修改
-        #             tapkey(k.enter_key,3)#适当修改
-        #
-        #
-        #     #判断型号 TODO---------------------
 
 
 # 我的代码
@@ -437,9 +417,8 @@ if __name__ == '__main__':
         t.setDaemon(True)
         t.start()
     print('press Capital to start')
-    print('键盘有点问题，程序运行完按Ctrl')
     print('做之前先把长度为4的，不需要程序进行处理的，排除！！！！')
-    print('两个小时 300个')
+    #print('智能化0.8看下，164行！！！！')
 
     with keyboard.Listener(on_press=onpressed) as listener:
         listener.join()
